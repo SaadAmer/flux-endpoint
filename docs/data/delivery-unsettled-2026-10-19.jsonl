@@ -1,0 +1,5 @@
+{"job_id": "c94d753f-9c79-4ff6-9322-d63fa92dd011-e1", "status": "COMPLETED", "wall_ms": 33141, "delay_ms": 29541, "execution_ms": 1772, "gpu": "NVIDIA A40", "cost_usd": null, "error": null, "variant": "baked"}
+{"job_id": "60fc4dd2-135c-471d-888c-df1390f1aa4e-e2", "status": "COMPLETED", "wall_ms": 43039, "delay_ms": 39289, "execution_ms": 1747, "gpu": "NVIDIA A40", "cost_usd": null, "error": null, "variant": "baked"}
+{"job_id": "8a4de47d-b2e9-4dfb-8ad8-25ccca3bb203-e2", "status": "COMPLETED", "wall_ms": 41358, "delay_ms": 37868, "execution_ms": 1752, "gpu": "NVIDIA A40", "cost_usd": null, "error": null, "variant": "baked"}
+{"job_id": "14042f4b-731e-4c80-8a6a-89e35485f167-e1", "status": "COMPLETED", "wall_ms": 4410, "delay_ms": 998, "execution_ms": 1742, "gpu": "NVIDIA A40", "cost_usd": null, "error": null, "variant": "baked"}
+{"job_id": "34df5b7d-97e1-449f-98ee-a66df56ad06b-e2", "status": "COMPLETED", "wall_ms": 4330, "delay_ms": 1126, "execution_ms": 1729, "gpu": "NVIDIA A40", "cost_usd": null, "error": null, "variant": "baked"}
