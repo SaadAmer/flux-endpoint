@@ -1,0 +1,10 @@
+{
+  "input": {
+    "prompt": "A lighthouse on a rocky coast at dusk, waves breaking, cinematic lighting",
+    "width": 512,
+    "height": 512,
+    "num_inference_steps": 4,
+    "seed": 42,
+    "image_format": "png"
+  }
+}
