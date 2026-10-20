@@ -1,0 +1,20 @@
+[endpoint]
+name = "flux-cold-start-global-volume"
+image = "docker.io/saadamer/flux-endpoint-slim:0.1.0"
+gpu_pools = ["AMPERE_48"]
+excluded_gpu_types = ["NVIDIA RTX A6000"]
+min_cuda_version = "13.0"
+container_disk_gb = 20
+workers_min = 0
+workers_max = 1
+idle_timeout_s = 5
+queue_delay_s = 4
+# FlashBoot off and a 5 second idle timeout, so every run measures a full cold start.
+flashboot = false
+execution_timeout_s = 600
+# The study's volume, deleted after the measurements. docs/deployment.md shows how to create
+# and fill your own.
+global_volume_id = "cmvfa99gh000007lbe68adazj"
+
+[endpoint.env]
+FLUX_MODEL_DIR = "/runpod-volume/flux-1-dev"

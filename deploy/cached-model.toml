@@ -1,0 +1,20 @@
+[endpoint]
+name = "flux-1-dev-cached-model"
+image = "docker.io/saadamer/flux-endpoint-slim:0.1.0"
+gpu_pools = ["ADA_48_PRO", "AMPERE_80", "AMPERE_48"]
+excluded_gpu_types = ["NVIDIA RTX PRO 6000 Blackwell Server Edition MIG 2g.48gb"]
+min_cuda_version = "13.0"
+container_disk_gb = 20
+workers_min = 0
+# No worker until the cached model is set. A worker prepared before that can start without the
+# model. Set Model and Max workers together in the console.
+workers_max = 0
+idle_timeout_s = 60
+queue_delay_s = 4
+flashboot = true
+execution_timeout_s = 600
+
+# The cached model itself is set in the console, because the REST API has no field for it:
+# Model black-forest-labs/FLUX.1-dev, with a Hugging Face token for the gated repo.
+[endpoint.env]
+FLUX_MODEL_DIR = "/runpod-volume/huggingface-cache/hub/models--black-forest-labs--FLUX.1-dev"

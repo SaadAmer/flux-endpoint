@@ -1,0 +1,20 @@
+[registry]
+name = "dockerhub-flux-endpoint"
+
+[endpoint]
+name = "flux-1-dev"
+image = "docker.io/saadamer/flux-endpoint:0.1.0"
+# Ordered by the measured cost per image in docs/results.md. Runpod treats the order as a
+# preference only. The MIG slice cost the most per image, and was slower than the L40S at
+# the same price.
+gpu_pools = ["ADA_48_PRO", "AMPERE_80", "AMPERE_48"]
+excluded_gpu_types = ["NVIDIA RTX PRO 6000 Blackwell Server Edition MIG 2g.48gb"]
+# The PyPI torch wheel in uv.lock is built for CUDA 13.
+min_cuda_version = "13.0"
+container_disk_gb = 20
+workers_min = 0
+workers_max = 2
+idle_timeout_s = 60
+queue_delay_s = 4
+flashboot = true
+execution_timeout_s = 600
