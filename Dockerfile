@@ -1,10 +1,10 @@
 # syntax=docker/dockerfile:1@sha256:4edf897a3ffa55b89f906fc8cc78afdb3f1834cc9c7083565e611a8a7d5fe99e
 ARG MODEL=baked
 
-FROM ghcr.io/astral-sh/uv:0.12.10@sha256:2bb3ebca0a796a155094a27773d290c4b074572e6107f171d88d086682fd2500 AS uv
+FROM ghcr.io/astral-sh/uv:0.12.24@sha256:3af4716e991d6956a41e573eab705d0ee08500cd829ed30293eb8472f372c65a AS uv
 
 # Weights are platform-independent, so this stage runs natively on the build machine.
-FROM --platform=$BUILDPLATFORM ghcr.io/astral-sh/uv:0.12.10-python3.12-trixie-slim@sha256:4bf11151c225e2a4d60e2a576b67d925660055199389d9a64fbdc02b6f3d43d5 AS weights
+FROM --platform=$BUILDPLATFORM ghcr.io/astral-sh/uv:0.12.24-python3.12-trixie-slim@sha256:c45e18882c3b26a1631ac8b64537a2213e301b752edaa2471d32226090ccaafe AS weights
 ARG HF_HUB_VERSION=2.1.1
 # Only packages published before this date run in the stage that holds the token.
 ARG EXCLUDE_NEWER=2026-10-07T00:00:00Z
