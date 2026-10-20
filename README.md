@@ -5,6 +5,10 @@ A Runpod Serverless endpoint that turns a text prompt into an image with
 Docker image. One Python package holds the worker, the clients, deployment as code and a
 benchmark, behind one command: `flux-endpoint`.
 
+The Runpod handler is [`src/flux_endpoint/worker/handler.py`](src/flux_endpoint/worker/handler.py).
+The image is built from the [`Dockerfile`](Dockerfile), and
+[`deploy/endpoint.toml`](deploy/endpoint.toml) holds the endpoint settings.
+
 ## What it does
 
 - Serves FLUX.1-dev on Runpod Serverless. A prompt goes in, and an image comes back as base64
