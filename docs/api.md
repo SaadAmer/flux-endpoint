@@ -1,8 +1,7 @@
 # API
 
-How to call the endpoint, and what it returns. Every request needs a Runpod API key as a bearer
-token. The examples read it from `RUNPOD_API_KEY` and the endpoint ID from
-`RUNPOD_ENDPOINT_ID`.
+Every request needs a Runpod API key as a bearer token. The examples read the key from
+`RUNPOD_API_KEY` and the endpoint ID from `RUNPOD_ENDPOINT_ID`.
 
 ## Routes
 
@@ -10,11 +9,11 @@ The endpoint uses Runpod's standard queue routes on `https://api.runpod.ai/v2/<e
 
 | Route | Method | What it does |
 |---|---|---|
-| `/run` | POST | Queue a job and return its ID at once |
+| `/run` | POST | Queue a job and return its ID right away |
 | `/runsync` | POST | Queue a job and wait for the result. After a long cold start it returns the job ID and status instead |
 | `/status/<job ID>` | GET | Read a job's status and, when it is done, its output |
 | `/cancel/<job ID>` | POST | Cancel a queued or running job |
-| `/health` | GET | Job counts, and worker counts by state. The worker counts trail the REST API worker list by about 30 seconds |
+| `/health` | GET | Job and worker counts by state. The worker counts trail the REST API worker list by about 30 seconds |
 
 Results stay available for 30 minutes after a job completes. `/run` accepts 1,000 requests
 per 10 seconds per endpoint, and the limit grows with the number of workers.
@@ -35,7 +34,8 @@ Endpoint.
 | `seed` | integer | -1 | -1 picks a random seed, or 0 to 4294967295 |
 | `image_format` | string | `jpeg` | `png` or `jpeg` |
 
-Unknown fields are rejected, so a misspelled field fails at once instead of being ignored.
+Unknown fields are rejected, so a misspelled field fails the job right away instead of being
+ignored.
 
 A job can also carry a `policy`. `ttl` is the time in milliseconds after which Runpod drops
 the job, whether it is queued or running. The CLI sets it to its own timeout plus 60 seconds.
@@ -73,7 +73,7 @@ milliseconds) and `executionTime` (time on the worker).
 | Case | Result |
 |---|---|
 | Invalid input | Job `FAILED` with `Invalid input: <field>: <reason>`. Nothing runs on the GPU |
-| GPU out of memory | Job `FAILED`, and the worker restarts, so the next job gets a clean GPU |
+| GPU out of memory | Job `FAILED`. The worker restarts, so the next job gets a clean GPU |
 | Any other exception | Job `FAILED` with the traceback that the Runpod SDK records |
 | Job over 600 seconds | Job `TIMED_OUT` |
 
@@ -87,15 +87,16 @@ milliseconds) and `executionTime` (time on the worker).
 | Image in the output | `image_base64`, or `image_url` with an output bucket | An image URL valid for 7 days, in `result`. Runpod's docs name the field `image_url` |
 | Price | Per second of GPU time | Listed at $0.02 per megapixel. Each image cost $0.012 on 19 October 2026, at every size from 512 x 512 to 1536 x 1536 |
 
-Requests without `true_cfg_scale` work on both. Send `guidance`, because the defaults differ.
-The CLI and the Python client always send it, and they read `image_base64`, `image_url` and
-`result`.
+Requests without `true_cfg_scale` work on both, but send `guidance` because the defaults
+differ. The CLI and the Python client always send it. They can read the image from any of
+`image_base64`, `image_url` and `result`.
 
 ## Examples
 
 ### curl
 
-`/runsync` waits for the image. `jq` and `base64` save it to a file:
+`/runsync` waits for the image. Pipe the response through `jq` and `base64` to save it to a
+file:
 
 ```bash
 curl -s -X POST "https://api.runpod.ai/v2/$RUNPOD_ENDPOINT_ID/runsync" \
@@ -113,8 +114,8 @@ JOB_ID="$(curl -s -X POST "https://api.runpod.ai/v2/$RUNPOD_ENDPOINT_ID/run" \
   -d @test_input.json | jq -r '.id')"
 ```
 
-Then read `/status` until the status is `COMPLETED`. The image is then in
-`.output.image_base64`:
+Read `/status` until the status is `COMPLETED`, then take the image from
+`.output.image_base64`. To check the status and the timings:
 
 ```bash
 curl -s "https://api.runpod.ai/v2/$RUNPOD_ENDPOINT_ID/status/$JOB_ID" \
@@ -123,8 +124,7 @@ curl -s "https://api.runpod.ai/v2/$RUNPOD_ENDPOINT_ID/status/$JOB_ID" \
 
 ### The CLI
 
-The CLI submits with a time to live, polls, cancels the job if it stops waiting, and saves the
-image under `outputs/`:
+The CLI polls for the result and saves the image under `outputs/`. To generate an image:
 
 ```bash
 uv run flux-endpoint generate "A lighthouse on a rocky coast at dusk, cinematic lighting" --seed 42
@@ -153,16 +153,14 @@ with create_runpod_client(os.environ["RUNPOD_API_KEY"], JOB_API_URL) as http:
 print(result.status, result.output["seed"], result.output["gpu"])
 ```
 
-`JobClient.run` retries throttled requests, gives the job a time to live, and cancels the job
-if the call fails or is interrupted.
+The CLI uses the same `JobClient.run`. It sets a time to live, retries throttled requests,
+and cancels the job if the call fails or is interrupted.
 
 ### Postman
 
-1. Import `postman/flux-endpoint.postman_collection.json` and
-   `postman/runpod.postman_environment.json`.
-2. Select the **Runpod** environment and set `apiKey` and `endpointId`.
-3. Send **Generate (runsync)**. The **Visualize** tab of the response shows the image.
-
-**Submit (run)** saves the job ID, so **Status** and **Cancel** work on it next. **Public
-Endpoint (runsync)** sends the same request to Runpod's FLUX.1-dev Public Endpoint for
+Import `postman/flux-endpoint.postman_collection.json` and
+`postman/runpod.postman_environment.json`, select the **Runpod** environment, and fill in
+`apiKey` and `endpointId`. **Generate (runsync)** waits for the image and shows it in the
+response's **Visualize** tab. **Submit (run)** saves the job ID for **Status** and **Cancel**.
+**Public Endpoint (runsync)** sends the same request to Runpod's FLUX.1-dev Public Endpoint for
 comparison.

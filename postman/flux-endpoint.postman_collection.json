@@ -42,7 +42,7 @@
     {
       "name": "Generate (runsync)",
       "request": {
-        "description": "Waits for the image. After a cold start the wait can end before the image is ready. Then send Status, which uses the saved job ID.",
+        "description": "Waits for the image. After a cold start the call can return before the image is ready. If it does, send Status, which uses the saved job ID.",
         "method": "POST",
         "header": [{ "key": "Content-Type", "value": "application/json" }],
         "url": "{{baseUrl}}/{{endpointId}}/runsync",
@@ -78,7 +78,7 @@
     {
       "name": "Cancel",
       "request": {
-        "description": "Cancels the saved job, so a job nobody waits for stops billing.",
+        "description": "Cancels the saved job. Use it to stop paying for a job you are no longer waiting for.",
         "method": "POST",
         "url": "{{baseUrl}}/{{endpointId}}/cancel/{{jobId}}"
       }
@@ -86,7 +86,7 @@
     {
       "name": "Health",
       "request": {
-        "description": "Job counts by state and worker counts by state.",
+        "description": "Job and worker counts by state.",
         "method": "GET",
         "url": "{{baseUrl}}/{{endpointId}}/health"
       }
@@ -94,7 +94,7 @@
     {
       "name": "Public Endpoint (runsync)",
       "request": {
-        "description": "The same request on Runpod's FLUX.1-dev Public Endpoint, billed per image. The response reports the cost. The response holds an image URL in result, which Runpod's docs name image_url, instead of image_base64.",
+        "description": "The same request on Runpod's FLUX.1-dev Public Endpoint, billed per image. The response reports the cost. The image comes back as a URL in result, not image_base64, even though Runpod's docs call that field image_url.",
         "method": "POST",
         "header": [{ "key": "Content-Type", "value": "application/json" }],
         "url": "{{baseUrl}}/{{publicEndpointId}}/runsync",

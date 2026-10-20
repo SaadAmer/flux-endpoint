@@ -1,7 +1,6 @@
 # Try it
 
-Four ways to run the project, from the quickest to the most complete. None of them needs a
-code change.
+You can run the project in four ways without changing any code.
 
 | Way | Time | Needs | Cost |
 |---|---|---|---|
@@ -16,37 +15,37 @@ Start by cloning the repository:
 git clone https://github.com/SaadAmer/flux-endpoint.git
 ```
 
-Ways 2 and 3 use only the CLI, which needs only the client libraries. That is a download of
-about 30 MB:
+Ways 2 and 3 use only the CLI. Install its client libraries, about 30 MB:
 
 ```bash
 cd flux-endpoint && uv sync --extra client
 ```
 
-Ways 1 and 4 also run the worker or the tests, which need PyTorch and the other worker
-libraries. That is a download of about 230 MB on a Mac, and about 3.1 GB on Linux, where the
-PyTorch packages include CUDA:
+Ways 1 and 4 also run the worker or the tests, so they need PyTorch and the other worker
+libraries. The download is about 230 MB on a Mac and about 3.1 GB on Linux, where the PyTorch
+packages include CUDA:
 
 ```bash
 cd flux-endpoint && make install
 ```
 
-Way 2 with Postman or curl needs no install.
+Way 2 with Postman or curl needs no install at all.
 
 ## 1. On a laptop
 
-This runs the real handler on the CPU behind the Runpod SDK's local API server. It uses
+`make worker-local` runs the real handler on the CPU, behind the Runpod SDK's local API
+server. The model is
 [`hf-internal-testing/tiny-flux-pipe`](https://huggingface.co/hf-internal-testing/tiny-flux-pipe),
-a 1.3 MB FLUX pipeline with random weights, so the image shows noise. It proves the request
-path, the validation and the response format, not the image quality.
+a 1.3 MB FLUX pipeline with random weights. The image is noise, but the run checks the request
+path, the validation and the response format.
 
 ```bash
 make worker-local
 ```
 
-The worker is ready when it prints `Uvicorn running on http://localhost:8010`. In a second
-terminal, in the same folder, send a job and save the image. On a laptop CPU the job takes
-about 30 seconds:
+The worker is ready when it prints `Uvicorn running on http://localhost:8010`. On a laptop CPU
+a job takes about 30 seconds. In a second terminal, in the same folder, send one and save the
+image:
 
 ```bash
 curl -s -X POST http://localhost:8010/runsync -H "Content-Type: application/json" -d @test_input.json | jq -r '.output.image_base64' | base64 --decode > local.png
@@ -59,8 +58,9 @@ curl -s -X POST http://localhost:8010/runsync -H "Content-Type: application/json
 ```
 
 The job fails with `Invalid input: steps: Extra inputs are not permitted`, because the field
-is `num_inference_steps`. To run the whole test suite, including the same pipeline through
-diffusers:
+is `num_inference_steps`.
+
+The whole test suite also runs the same tiny pipeline through diffusers. To run it:
 
 ```bash
 make check
@@ -68,19 +68,18 @@ make check
 
 ## 2. Call the live endpoint
 
-The endpoint owner sends an API key that can reach only this endpoint, and the endpoint ID.
-The first request after an idle period waits for a cold start, while a worker starts and
-loads the model.
+The endpoint owner sends you the endpoint ID and an API key that can reach only this endpoint.
+After an idle period, the first request waits for a cold start while a worker starts and loads
+the model.
 
 With Postman:
 
 1. Import `postman/flux-endpoint.postman_collection.json` and
    `postman/runpod.postman_environment.json`.
 2. Select the **Runpod** environment and set `apiKey` and `endpointId`.
-3. Send **Generate (runsync)**. The **Visualize** tab of the response shows the image.
+3. Send **Generate (runsync)** and open the **Visualize** tab of the response to see the image.
 
-The key reaches only this endpoint, so the **Public Endpoint (runsync)** request needs a key
-of your own.
+For the **Public Endpoint (runsync)** request you need a key of your own.
 
 With the CLI, set `RUNPOD_API_KEY` and `RUNPOD_ENDPOINT_ID` in your shell, then:
 
@@ -89,13 +88,13 @@ uv run flux-endpoint generate "A lighthouse on a rocky coast at dusk, cinematic 
 ```
 
 The command saves the image under `outputs/` and prints the seed, the queue and run times,
-and the GPU. [API](api.md) shows the same call with curl and Python.
+and the GPU. For the same call with curl and Python, see [API](api.md).
 
 ## 3. Deploy in your own Runpod account
 
-This uses the public image `docker.io/saadamer/flux-endpoint-slim`, which holds the worker and
-its libraries but no weights. Runpod supplies the weights as a cached model, so nothing has to
-be built or uploaded.
+Way 3 uses the public image `docker.io/saadamer/flux-endpoint-slim`, which holds the worker and
+its libraries but no weights. Runpod supplies the weights as a cached model, so you have
+nothing to build or upload.
 
 You need:
 
@@ -114,11 +113,11 @@ Steps:
 2. In the [Runpod console](https://console.runpod.io/serverless), open the new endpoint
    `flux-1-dev-cached-model`, select **Manage**, then **Edit endpoint**. Set **Model** to
    `black-forest-labs/FLUX.1-dev` with your Hugging Face token, set **Max workers** to 2, and
-   save. Set both in the same edit, because a worker prepared before the model is set can
-   start without it. The REST API has no field for a cached model, so this step is manual.
+   save. Do both in one edit, or a worker prepared before the model is set can start without
+   it. This step is manual because the REST API has no field for a cached model.
 3. Set `RUNPOD_ENDPOINT_ID` to the ID that step 1 printed. Runpod now prepares workers with
-   the image and the model, which is not billed. Wait until this command shows a worker as
-   `IDLE`, which took 2 to 5 minutes in the measurements:
+   the image and the model, and does not bill for this. In my runs it took 2 to 5 minutes.
+   Wait until this command shows a worker as `IDLE`:
 
    ```bash
    uv run flux-endpoint status
@@ -136,20 +135,18 @@ Steps:
    uv run flux-endpoint teardown deploy/cached-model.toml
    ```
 
-The same endpoint can be created in the console alone: a new endpoint from the Docker image
-that `deploy/cached-model.toml` names, a 48 GB GPU, CUDA 13.0 or later, the environment
-variable `FLUX_MODEL_DIR` set as in that file, and the **Model** set as in step 2.
+You can also create the same endpoint entirely in the console. Use the Docker image named in
+`deploy/cached-model.toml`, a 48 GB GPU and CUDA 13.0 or later. Set the environment variable
+`FLUX_MODEL_DIR` to the value in that file, and set **Model** as in step 2.
 
 ## 4. Build everything from source
 
-This builds the image with the weights baked in, pushes it to your own private registry and
-deploys it. [Deployment](deployment.md) walks through each step.
+Here you build the image with the weights baked in, push it to your own private registry and
+deploy it. The steps are in [Deployment](deployment.md).
 
 ## Clean up
 
-| Way | What to remove |
-|---|---|
-| 1 | Stop `make worker-local` with Ctrl-C |
-| 2 | Nothing |
-| 3 | `uv run flux-endpoint teardown deploy/cached-model.toml` |
-| 4 | `make teardown`, and the image in your registry |
+Ways 3 and 4 leave an endpoint in your account. Remove it with
+`uv run flux-endpoint teardown deploy/cached-model.toml` (way 3) or `make teardown` (way 4),
+and after way 4 also delete the image from your registry. To end way 1, stop
+`make worker-local` with Ctrl-C. Way 2 leaves nothing to remove.
