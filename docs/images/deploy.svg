@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 240" width="1000" height="240" role="img">
+  <style>
+    svg { --surface: #ffffff; --canvas: #f7f8fa; --ink: #15181e; --muted: #555e6c; --line: #a7aeb9; --build: #a6520a; --build-tint: #fcf1e6; --deploy: #0b6e66; --deploy-tint: #e5f4f2; --run: #5a3ec8; --run-tint: #efebfc; --danger: #b3261e; --danger-tint: #fdecea; --phase: #0b6e66; --phase-tint: #e5f4f2; }
+    @media (prefers-color-scheme: dark) { svg { --surface: #161a21; --canvas: #0e1116; --ink: #e7eaf0; --muted: #9ba4b3; --line: #4f5866; --build: #f2a65a; --build-tint: #2a1e12; --deploy: #4cc9bb; --deploy-tint: #0f2624; --run: #ad9bff; --run-tint: #1e1934; --danger: #ff8f86; --danger-tint: #2e1716; --phase: #4cc9bb; --phase-tint: #0f2624; } }
+    text { font-family: -apple-system, "Segoe UI", Helvetica, Arial, sans-serif; }
+    .canvas { fill: var(--canvas); }
+    .box { fill: var(--surface); stroke: var(--line); stroke-width: 1.25; }
+    .box.phase { fill: var(--phase-tint); stroke: var(--phase); }
+    .box.danger { fill: var(--danger-tint); stroke: var(--danger); }
+    .zone { fill: none; stroke: var(--line); stroke-width: 1.25; stroke-dasharray: 5 5; }
+    .t-title { font-size: 15px; font-weight: 600; fill: var(--ink); }
+    .t-line { font-size: 13px; fill: var(--muted); }
+    .t-mono, .t-zone, .t-label { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    .t-mono { font-size: 12.5px; fill: var(--muted); }
+    .t-zone { font-size: 11px; font-weight: 600; letter-spacing: 0.1em; fill: var(--muted); }
+    .t-label { font-size: 11.5px; font-weight: 500; fill: var(--phase); }
+    .t-step { font-weight: 700; }
+    .t-danger { fill: var(--danger); }
+    .edge { fill: none; stroke: var(--phase); stroke-width: 1.75; }
+    .edge.optional { stroke-dasharray: 6 5; }
+    .edge.danger { stroke: var(--danger); }
+    .head-phase { fill: var(--phase); }
+    .head-danger { fill: var(--danger); }
+  </style>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path class="head-phase" d="M0 1 L10 5 L0 9 Z"/></marker>
+    <marker id="arrow-danger" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path class="head-danger" d="M0 1 L10 5 L0 9 Z"/></marker>
+  </defs>
+  <rect class="canvas" width="1000" height="240" rx="12"/>
+              <title>Deploy stage</title>
+              <desc>The deploy command reads the endpoint spec and calls the Runpod REST API v2. It finds the endpoint by name, adds the registry credential, creates or updates the endpoint, then reads it back and compares every field.</desc>
+
+              <rect class="zone" x="16" y="24" width="232" height="190" rx="14"/>
+              <text class="t-zone" x="34" y="48">YOUR MACHINE</text>
+              <rect class="box" x="34" y="64" width="196" height="132" rx="10"/>
+              <text class="t-title" x="50" y="92">make deploy</text>
+              <text class="t-mono" x="50" y="118">endpoint.toml</text>
+              <text class="t-mono" x="50" y="140">RUNPOD_API_KEY</text>
+              <text class="t-line" x="50" y="162">read-only pull token</text>
+
+              <rect class="box phase" x="330" y="30" width="336" height="182" rx="10"/>
+              <text class="t-title" x="348" y="58">Runpod REST API v2</text>
+              <text class="t-mono" x="348" y="80">api.runpod.io</text>
+              <text class="t-label" x="348" y="112"><tspan class="t-step">1</tspan><tspan class="t-line" dx="10">Find the endpoint by name</tspan></text>
+              <text class="t-label" x="348" y="136"><tspan class="t-step">2</tspan><tspan class="t-line" dx="10">Add the registry credential if missing</tspan></text>
+              <text class="t-label" x="348" y="160"><tspan class="t-step">3</tspan><tspan class="t-line" dx="10">Create it, or PATCH its settings</tspan></text>
+              <text class="t-label" x="348" y="184"><tspan class="t-step">4</tspan><tspan class="t-line" dx="10">Read back and compare every field</tspan></text>
+
+              <rect class="box" x="752" y="30" width="232" height="182" rx="10"/>
+              <text class="t-title" x="768" y="58">Serverless endpoint</text>
+              <text class="t-line" x="768" y="86">queue-based</text>
+              <text class="t-line" x="768" y="108">0 to 2 workers</text>
+              <text class="t-line" x="768" y="130">48 and 80 GB GPU pools</text>
+              <text class="t-line" x="768" y="152">CUDA 13.0 or later</text>
+              <text class="t-line" x="768" y="174">600 s job timeout</text>
+
+              <path class="edge" d="M230 128 H326" marker-end="url(#arrow)"/>
+              <text class="t-label" x="289" y="118" text-anchor="middle">HTTPS</text>
+              <text class="t-label" x="289" y="146" text-anchor="middle">bearer key</text>
+              <path class="edge" d="M666 121 H748" marker-end="url(#arrow)"/>
+              <text class="t-label" x="707" y="111" text-anchor="middle">applies</text>
+            </svg>

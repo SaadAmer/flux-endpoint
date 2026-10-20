@@ -1,0 +1,105 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 424" width="1000" height="424" role="img">
+  <style>
+    svg { --surface: #ffffff; --canvas: #f7f8fa; --ink: #15181e; --muted: #555e6c; --line: #a7aeb9; --build: #a6520a; --build-tint: #fcf1e6; --deploy: #0b6e66; --deploy-tint: #e5f4f2; --run: #5a3ec8; --run-tint: #efebfc; --danger: #b3261e; --danger-tint: #fdecea; --phase: #5a3ec8; --phase-tint: #efebfc; }
+    @media (prefers-color-scheme: dark) { svg { --surface: #161a21; --canvas: #0e1116; --ink: #e7eaf0; --muted: #9ba4b3; --line: #4f5866; --build: #f2a65a; --build-tint: #2a1e12; --deploy: #4cc9bb; --deploy-tint: #0f2624; --run: #ad9bff; --run-tint: #1e1934; --danger: #ff8f86; --danger-tint: #2e1716; --phase: #ad9bff; --phase-tint: #1e1934; } }
+    text { font-family: -apple-system, "Segoe UI", Helvetica, Arial, sans-serif; }
+    .canvas { fill: var(--canvas); }
+    .box { fill: var(--surface); stroke: var(--line); stroke-width: 1.25; }
+    .box.phase { fill: var(--phase-tint); stroke: var(--phase); }
+    .box.danger { fill: var(--danger-tint); stroke: var(--danger); }
+    .zone { fill: none; stroke: var(--line); stroke-width: 1.25; stroke-dasharray: 5 5; }
+    .t-title { font-size: 15px; font-weight: 600; fill: var(--ink); }
+    .t-line { font-size: 13px; fill: var(--muted); }
+    .t-mono, .t-zone, .t-label { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    .t-mono { font-size: 12.5px; fill: var(--muted); }
+    .t-zone { font-size: 11px; font-weight: 600; letter-spacing: 0.1em; fill: var(--muted); }
+    .t-label { font-size: 11.5px; font-weight: 500; fill: var(--phase); }
+    .t-step { font-weight: 700; }
+    .t-danger { fill: var(--danger); }
+    .edge { fill: none; stroke: var(--phase); stroke-width: 1.75; }
+    .edge.optional { stroke-dasharray: 6 5; }
+    .edge.danger { stroke: var(--danger); }
+    .head-phase { fill: var(--phase); }
+    .head-danger { fill: var(--danger); }
+  </style>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path class="head-phase" d="M0 1 L10 5 L0 9 Z"/></marker>
+    <marker id="arrow-danger" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path class="head-danger" d="M0 1 L10 5 L0 9 Z"/></marker>
+  </defs>
+  <rect class="canvas" width="1000" height="424" rx="12"/>
+          <title>Worker lifecycle</title>
+          <desc>Once per worker: read settings, check the GPU, load FLUX.1-dev and run a fitness check. For each job: validate, resolve the seed, generate, encode, deliver and return. Invalid input and CUDA out-of-memory errors fail the job.</desc>
+
+          <text class="t-zone" x="24" y="34">ONCE PER WORKER</text>
+          <rect class="box phase" x="24" y="48" width="214" height="88" rx="10"/>
+          <text class="t-title" x="40" y="76">Read settings</text>
+          <text class="t-mono" x="40" y="100">FLUX_* variables</text>
+          <text class="t-line" x="40" y="120">bucket keys checked</text>
+
+          <rect class="box phase" x="272" y="48" width="214" height="88" rx="10"/>
+          <text class="t-title" x="288" y="76">Check the GPU</text>
+          <text class="t-line" x="288" y="100">40 GiB or more</text>
+          <text class="t-line" x="288" y="120">else exit with a reason</text>
+
+          <rect class="box phase" x="520" y="48" width="214" height="88" rx="10"/>
+          <text class="t-title" x="536" y="76">Load FLUX.1-dev</text>
+          <text class="t-line" x="536" y="100">bf16, straight to the GPU</text>
+          <text class="t-line" x="536" y="120">safetensors files only</text>
+
+          <rect class="box phase" x="768" y="48" width="214" height="88" rx="10"/>
+          <text class="t-title" x="784" y="76">Fitness check</text>
+          <text class="t-line" x="784" y="100">1 step at 256 × 256</text>
+          <text class="t-line" x="784" y="120">before the first job</text>
+
+          <path class="edge" d="M238 92 H268" marker-end="url(#arrow)"/>
+          <path class="edge" d="M486 92 H516" marker-end="url(#arrow)"/>
+          <path class="edge" d="M734 92 H764" marker-end="url(#arrow)"/>
+          <path class="edge" d="M875 136 V168 H14 V268 H40" marker-end="url(#arrow)"/>
+
+          <text class="t-zone" x="44" y="208">FOR EACH JOB</text>
+          <rect class="box" x="44" y="222" width="136" height="92" rx="10"/>
+          <text class="t-title" x="58" y="250">Validate</text>
+          <text class="t-line" x="58" y="274">Pydantic model</text>
+          <text class="t-line" x="58" y="294">limits enforced</text>
+
+          <rect class="box" x="204" y="222" width="136" height="92" rx="10"/>
+          <text class="t-title" x="218" y="250">Resolve seed</text>
+          <text class="t-line" x="218" y="274">-1 becomes</text>
+          <text class="t-line" x="218" y="294">a random seed</text>
+
+          <rect class="box" x="364" y="222" width="136" height="92" rx="10"/>
+          <text class="t-title" x="378" y="250">Generate</text>
+          <text class="t-line" x="378" y="274">CPU noise</text>
+          <text class="t-line" x="378" y="294">GPU denoising</text>
+
+          <rect class="box" x="524" y="222" width="136" height="92" rx="10"/>
+          <text class="t-title" x="538" y="250">Encode</text>
+          <text class="t-line" x="538" y="274">PNG or JPEG</text>
+          <text class="t-line" x="538" y="294">quality 90</text>
+
+          <rect class="box" x="684" y="222" width="136" height="92" rx="10"/>
+          <text class="t-title" x="698" y="250">Deliver</text>
+          <text class="t-line" x="698" y="274">inline base64</text>
+          <text class="t-line" x="698" y="294">or bucket URL</text>
+
+          <rect class="box" x="844" y="222" width="136" height="92" rx="10"/>
+          <text class="t-title" x="858" y="250">Return</text>
+          <text class="t-line" x="858" y="274">seed, GPU</text>
+          <text class="t-line" x="858" y="294">and timings</text>
+
+          <path class="edge" d="M180 268 H200" marker-end="url(#arrow)"/>
+          <path class="edge" d="M340 268 H360" marker-end="url(#arrow)"/>
+          <path class="edge" d="M500 268 H520" marker-end="url(#arrow)"/>
+          <path class="edge" d="M660 268 H680" marker-end="url(#arrow)"/>
+          <path class="edge" d="M820 268 H840" marker-end="url(#arrow)"/>
+
+          <path class="edge danger" d="M112 314 V346" marker-end="url(#arrow-danger)"/>
+          <rect class="box danger" x="44" y="350" width="264" height="60" rx="10"/>
+          <text class="t-title t-danger" x="58" y="374">Job FAILED</text>
+          <text class="t-mono" x="58" y="396">Invalid input: field: reason</text>
+
+          <path class="edge danger" d="M432 314 V346" marker-end="url(#arrow-danger)"/>
+          <rect class="box danger" x="332" y="350" width="280" height="60" rx="10"/>
+          <text class="t-title t-danger" x="346" y="374">CUDA out of memory</text>
+          <text class="t-line" x="346" y="396">Job FAILED, worker restarts</text>
+        </svg>

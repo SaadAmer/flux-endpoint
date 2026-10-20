@@ -1,0 +1,109 @@
+{
+  "info": {
+    "name": "FLUX.1-dev on Runpod Serverless",
+    "description": "Calls the FLUX.1-dev Serverless endpoint and Runpod's FLUX.1-dev Public Endpoint with the same request. Select the Runpod environment, set apiKey and endpointId, then send Generate. The Visualize tab of the response shows the image.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [{ "key": "token", "value": "{{apiKey}}", "type": "string" }]
+  },
+  "event": [
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "const body = pm.response.json();",
+          "if (body.id) {",
+          "  pm.collectionVariables.set('jobId', body.id);",
+          "}",
+          "const output = body.output || {};",
+          "const source = output.image_base64",
+          "  ? `data:image/${output.image_format === 'png' ? 'png' : 'jpeg'};base64,${output.image_base64}`",
+          "  : output.image_url || output.result;",
+          "if (source) {",
+          "  pm.test('Job completed', () => pm.expect(body.status).to.eql('COMPLETED'));",
+          "  pm.visualizer.set(",
+          "    '<img src=\"{{source}}\" style=\"max-width:100%\"><p>{{caption}}</p>',",
+          "    { source, caption: output.gpu ? `Seed ${output.seed} on ${output.gpu}` : `Cost $${output.cost}` }",
+          "  );",
+          "}"
+        ]
+      }
+    }
+  ],
+  "variable": [
+    { "key": "baseUrl", "value": "https://api.runpod.ai/v2" },
+    { "key": "publicEndpointId", "value": "black-forest-labs-flux-1-dev" },
+    { "key": "jobId", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Generate (runsync)",
+      "request": {
+        "description": "Waits for the image. After a cold start the wait can end before the image is ready. Then send Status, which uses the saved job ID.",
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{baseUrl}}/{{endpointId}}/runsync",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"input\": {\n    \"prompt\": \"A lighthouse on a rocky coast at dusk, waves breaking, cinematic lighting\",\n    \"width\": 1024,\n    \"height\": 1024,\n    \"num_inference_steps\": 28,\n    \"guidance\": 3.5,\n    \"seed\": 42,\n    \"image_format\": \"jpeg\"\n  }\n}",
+          "options": { "raw": { "language": "json" } }
+        }
+      }
+    },
+    {
+      "name": "Submit (run)",
+      "request": {
+        "description": "Queues a job and saves its ID for Status and Cancel. The policy expires the job after 10 minutes.",
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{baseUrl}}/{{endpointId}}/run",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"input\": {\n    \"prompt\": \"A red fox in fresh snow, early morning light, wildlife photography\",\n    \"seed\": 7\n  },\n  \"policy\": { \"ttl\": 600000 }\n}",
+          "options": { "raw": { "language": "json" } }
+        }
+      }
+    },
+    {
+      "name": "Status",
+      "request": {
+        "description": "Reads the saved job. Results stay available for 30 minutes after the job completes.",
+        "method": "GET",
+        "url": "{{baseUrl}}/{{endpointId}}/status/{{jobId}}"
+      }
+    },
+    {
+      "name": "Cancel",
+      "request": {
+        "description": "Cancels the saved job, so a job nobody waits for stops billing.",
+        "method": "POST",
+        "url": "{{baseUrl}}/{{endpointId}}/cancel/{{jobId}}"
+      }
+    },
+    {
+      "name": "Health",
+      "request": {
+        "description": "Job counts by state and worker counts by state.",
+        "method": "GET",
+        "url": "{{baseUrl}}/{{endpointId}}/health"
+      }
+    },
+    {
+      "name": "Public Endpoint (runsync)",
+      "request": {
+        "description": "The same request on Runpod's FLUX.1-dev Public Endpoint, billed per image. The response reports the cost. The response holds an image URL in result, which Runpod's docs name image_url, instead of image_base64.",
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{baseUrl}}/{{publicEndpointId}}/runsync",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"input\": {\n    \"prompt\": \"A lighthouse on a rocky coast at dusk, waves breaking, cinematic lighting\",\n    \"width\": 1024,\n    \"height\": 1024,\n    \"num_inference_steps\": 28,\n    \"guidance\": 3.5,\n    \"seed\": 42,\n    \"image_format\": \"jpeg\"\n  }\n}",
+          "options": { "raw": { "language": "json" } }
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 230" width="1000" height="230" role="img">
+  <style>
+    svg { --surface: #ffffff; --canvas: #f7f8fa; --ink: #15181e; --muted: #555e6c; --line: #a7aeb9; --build: #a6520a; --build-tint: #fcf1e6; --deploy: #0b6e66; --deploy-tint: #e5f4f2; --run: #5a3ec8; --run-tint: #efebfc; --danger: #b3261e; --danger-tint: #fdecea; --phase: #a6520a; --phase-tint: #fcf1e6; }
+    @media (prefers-color-scheme: dark) { svg { --surface: #161a21; --canvas: #0e1116; --ink: #e7eaf0; --muted: #9ba4b3; --line: #4f5866; --build: #f2a65a; --build-tint: #2a1e12; --deploy: #4cc9bb; --deploy-tint: #0f2624; --run: #ad9bff; --run-tint: #1e1934; --danger: #ff8f86; --danger-tint: #2e1716; --phase: #f2a65a; --phase-tint: #2a1e12; } }
+    text { font-family: -apple-system, "Segoe UI", Helvetica, Arial, sans-serif; }
+    .canvas { fill: var(--canvas); }
+    .box { fill: var(--surface); stroke: var(--line); stroke-width: 1.25; }
+    .box.phase { fill: var(--phase-tint); stroke: var(--phase); }
+    .box.danger { fill: var(--danger-tint); stroke: var(--danger); }
+    .zone { fill: none; stroke: var(--line); stroke-width: 1.25; stroke-dasharray: 5 5; }
+    .t-title { font-size: 15px; font-weight: 600; fill: var(--ink); }
+    .t-line { font-size: 13px; fill: var(--muted); }
+    .t-mono, .t-zone, .t-label { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    .t-mono { font-size: 12.5px; fill: var(--muted); }
+    .t-zone { font-size: 11px; font-weight: 600; letter-spacing: 0.1em; fill: var(--muted); }
+    .t-label { font-size: 11.5px; font-weight: 500; fill: var(--phase); }
+    .t-step { font-weight: 700; }
+    .t-danger { fill: var(--danger); }
+    .edge { fill: none; stroke: var(--phase); stroke-width: 1.75; }
+    .edge.optional { stroke-dasharray: 6 5; }
+    .edge.danger { stroke: var(--danger); }
+    .head-phase { fill: var(--phase); }
+    .head-danger { fill: var(--danger); }
+  </style>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path class="head-phase" d="M0 1 L10 5 L0 9 Z"/></marker>
+    <marker id="arrow-danger" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path class="head-danger" d="M0 1 L10 5 L0 9 Z"/></marker>
+  </defs>
+  <rect class="canvas" width="1000" height="230" rx="12"/>
+              <title>Build stage</title>
+              <desc>Hugging Face weights download into a weights stage that runs on the build machine. They are copied into the runtime stage as separate layers, and the image is pushed to a private Docker Hub repository.</desc>
+
+              <rect class="box" x="24" y="72" width="170" height="104" rx="10"/>
+              <text class="t-title" x="40" y="100">Hugging Face</text>
+              <text class="t-mono" x="40" y="124">FLUX.1-dev</text>
+              <text class="t-line" x="40" y="146">revision 3de623f</text>
+
+              <rect class="zone" x="266" y="20" width="468" height="190" rx="14"/>
+              <text class="t-zone" x="284" y="44">YOUR MACHINE · DOCKER BUILDX</text>
+
+              <rect class="box phase" x="284" y="62" width="180" height="124" rx="10"/>
+              <text class="t-title" x="300" y="90">weights stage</text>
+              <text class="t-line" x="300" y="114">native platform</text>
+              <text class="t-line" x="300" y="134">token as a secret</text>
+              <text class="t-line" x="300" y="154">diffusers files only</text>
+
+              <rect class="box phase" x="536" y="62" width="180" height="124" rx="10"/>
+              <text class="t-title" x="552" y="90">runtime stage</text>
+              <text class="t-mono" x="552" y="114">python:3.12-slim</text>
+              <text class="t-line" x="552" y="134">deps from uv.lock</text>
+              <text class="t-line" x="552" y="154">non-root user</text>
+
+              <rect class="box" x="806" y="72" width="170" height="104" rx="10"/>
+              <text class="t-title" x="822" y="100">Docker Hub</text>
+              <text class="t-line" x="822" y="124">private repository</text>
+              <text class="t-mono" x="822" y="146">0.1.0-&lt;git sha&gt;</text>
+
+              <path class="edge" d="M194 124 H280" marker-end="url(#arrow)"/>
+              <text class="t-label" x="230" y="114" text-anchor="middle">download</text>
+              <path class="edge" d="M464 124 H532" marker-end="url(#arrow)"/>
+              <text class="t-label" x="500" y="114" text-anchor="middle">layers</text>
+              <path class="edge" d="M716 124 H802" marker-end="url(#arrow)"/>
+              <text class="t-label" x="761" y="114" text-anchor="middle">push</text>
+              <text class="t-label" x="761" y="142" text-anchor="middle">30 GB</text>
+            </svg>
