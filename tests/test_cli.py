@@ -6,6 +6,7 @@ from typing import Any
 import httpx
 import pytest
 import respx
+from click import unstyle
 from typer.testing import CliRunner, Result
 
 from flux_endpoint.bench.runner import Sample, read_samples, write_samples
@@ -146,7 +147,7 @@ def test_api_key_is_not_accepted_as_an_option(runner: CliRunner) -> None:
     result = runner.invoke(app, ["status", "--api-key", "rp-test-key"])
 
     assert result.exit_code == 2
-    assert "--api-key" in result.output
+    assert "No such option: --api-key" in unstyle(result.output)
 
 
 def test_bench_saves_samples_and_prints_report(runner: CliRunner, tmp_path: Path) -> None:
