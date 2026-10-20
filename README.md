@@ -72,6 +72,10 @@ git clone https://github.com/SaadAmer/flux-endpoint.git
 cd flux-endpoint && make install
 ```
 
+The install downloads PyTorch and the other worker libraries, about 230 MB on a Mac and about
+3.1 GB on Linux. To call an endpoint without running the worker, `uv sync --extra client` is
+enough, as [Try it](docs/try-it.md) shows.
+
 ```bash
 make worker-local
 ```

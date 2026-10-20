@@ -10,17 +10,28 @@ code change.
 | [3. Deploy in your own Runpod account](#3-deploy-in-your-own-runpod-account) | 15 minutes, plus the first cold start | A Runpod API key, and a Hugging Face token that can read FLUX.1-dev | About $0.01 per image, plus a few cents for each cold start and idle period |
 | [4. Build everything from source](#4-build-everything-from-source) | An hour or more | Also a private container registry | Your Runpod credit |
 
-Start by cloning the repository and installing the project:
+Start by cloning the repository:
 
 ```bash
 git clone https://github.com/SaadAmer/flux-endpoint.git
 ```
 
+Ways 2 and 3 use only the CLI, which needs only the client libraries. That is a download of
+about 30 MB:
+
+```bash
+cd flux-endpoint && uv sync --extra client
+```
+
+Ways 1 and 4 also run the worker or the tests, which need PyTorch and the other worker
+libraries. That is a download of about 230 MB on a Mac, and about 3.1 GB on Linux, where the
+PyTorch packages include CUDA:
+
 ```bash
 cd flux-endpoint && make install
 ```
 
-The first install downloads PyTorch and the other worker libraries, so it takes a few minutes.
+Way 2 with Postman or curl needs no install.
 
 ## 1. On a laptop
 
