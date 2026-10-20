@@ -1,0 +1,148 @@
+[project]
+name = "flux-endpoint"
+version = "0.1.0"
+description = "FLUX.1-dev text-to-image worker, client and deployment for Runpod Serverless."
+authors = [{ name = "Saad Amer" }]
+license = "MIT"
+license-files = ["LICENSE"]
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "pydantic>=2.13",
+]
+
+[project.scripts]
+flux-endpoint = "flux_endpoint.cli:app"
+
+[project.optional-dependencies]
+worker = [
+    "accelerate>=1.14",
+    "diffusers>=0.40",
+    "pillow>=12.2",
+    "runpod>=1.12",
+    "torch>=2.13",
+    "transformers>=5.17",
+]
+client = [
+    "httpx>=0.28",
+    "typer>=0.25",
+]
+
+[dependency-groups]
+dev = [
+    "flake8>=7.3",
+    "mypy>=2.3",
+    "pip-audit>=2.10.1",
+    "pre-commit>=4.6",
+    "pytest>=9.0",
+    "pytest-cov>=7.0",
+    "respx>=0.23",
+    "ruff>=0.16",
+]
+
+[build-system]
+requires = ["uv_build>=0.12,<0.13"]
+build-backend = "uv_build"
+
+[tool.uv]
+default-groups = ["dev"]
+exclude-newer = "7 days"
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+src = ["src", "tests"]
+
+[tool.ruff.format]
+docstring-code-format = true
+
+[tool.ruff.lint]
+select = [
+    "A",
+    "ANN",
+    "ARG",
+    "B",
+    "C4",
+    "C90",
+    "D",
+    "DTZ",
+    "E",
+    "ERA",
+    "F",
+    "G",
+    "I",
+    "LOG",
+    "N",
+    "PERF",
+    "PGH",
+    "PIE",
+    "PL",
+    "PT",
+    "PTH",
+    "RET",
+    "RUF",
+    "S",
+    "SIM",
+    "T20",
+    "TD",
+    "UP",
+    "W",
+]
+ignore = [
+    "D100",
+    "D102",
+    "D104",
+    "D105",
+    "D107",
+    "TD002",
+]
+
+[tool.ruff.lint.per-file-ignores]
+# Typer maps each command-line option to one function parameter.
+"src/flux_endpoint/cli.py" = ["PLR0913", "PLR0917"]
+"tests/**" = ["D101", "PLR2004", "S101"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.lint.mccabe]
+max-complexity = 10
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+warn_unreachable = true
+enable_error_code = ["ignore-without-code", "redundant-expr", "truthy-bool"]
+files = ["src", "tests"]
+plugins = ["pydantic.mypy"]
+
+# diffusers ships py.typed but leaves from_pretrained and __call__ unannotated.
+[[tool.mypy.overrides]]
+module = ["diffusers", "diffusers.*"]
+follow_imports = "skip"
+
+[[tool.mypy.overrides]]
+module = ["runpod", "runpod.*"]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+minversion = "9.0"
+testpaths = ["tests"]
+addopts = ["--import-mode=importlib", "--strict-config", "--strict-markers", "-ra", "-m", "not live"]
+xfail_strict = true
+markers = [
+    "integration: runs real diffusers on the CPU with a 1.3 MB random-weight FLUX pipeline",
+    "live: sends a real job to the deployed endpoint, which spends credits. Deselected by default",
+]
+
+[tool.coverage.run]
+branch = true
+source = ["flux_endpoint"]
+
+[tool.coverage.report]
+fail_under = 90
+show_missing = true
+skip_covered = true
+exclude_also = [
+    "if TYPE_CHECKING:",
+    'if __name__ == "__main__":',
+]
