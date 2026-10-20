@@ -3,7 +3,7 @@ name = "dockerhub-flux-endpoint"
 
 [endpoint]
 name = "flux-cold-start-baked"
-image = "docker.io/saadamer/flux-endpoint:0.1.0"
+image = "docker.io/saadamer/flux-endpoint:0.1.0-a937f2f"
 gpu_pools = ["AMPERE_48"]
 excluded_gpu_types = ["NVIDIA RTX A6000"]
 min_cuda_version = "13.0"

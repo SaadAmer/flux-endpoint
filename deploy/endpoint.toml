@@ -3,7 +3,7 @@ name = "dockerhub-flux-endpoint"
 
 [endpoint]
 name = "flux-1-dev"
-image = "docker.io/saadamer/flux-endpoint:0.1.0"
+image = "docker.io/saadamer/flux-endpoint:0.1.0-a937f2f"
 # Ordered by the measured cost per image in docs/results.md. Runpod treats the order as a
 # preference only. The MIG slice cost the most per image, and was slower than the L40S at
 # the same price.

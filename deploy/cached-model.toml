@@ -1,6 +1,6 @@
 [endpoint]
 name = "flux-1-dev-cached-model"
-image = "docker.io/saadamer/flux-endpoint-slim:0.1.0"
+image = "docker.io/saadamer/flux-endpoint-slim:0.1.0-a937f2f"
 gpu_pools = ["ADA_48_PRO", "AMPERE_80", "AMPERE_48"]
 excluded_gpu_types = ["NVIDIA RTX PRO 6000 Blackwell Server Edition MIG 2g.48gb"]
 min_cuda_version = "13.0"
