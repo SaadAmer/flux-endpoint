@@ -123,7 +123,8 @@ uv lock --upgrade-package diffusers
 ```
 
 Dependabot opens a weekly pull request for the lock, the Docker base image digests and the
-GitHub Actions.
+GitHub Actions. It does not change the Python or uv version of a base image. Change those by
+hand, together with `.python-version` and the uv version in `.github/workflows/ci.yml`.
 
 ## Releases
 

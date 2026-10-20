@@ -62,7 +62,8 @@ keys that reach only this endpoint for the services that send jobs.
   commit.
 - `make audit` and CI check every locked package for known vulnerabilities with pip-audit.
 - Dependabot proposes updates to the lock, the image digests and the actions every week, after
-  the same 7-day cooldown.
+  the same 7-day cooldown. ghcr.io gives no publication dates, so the cooldown does not apply
+  to the uv images.
 - The CI workflow runs with a read-only token, and the checkout does not keep it.
 
 ## Data
