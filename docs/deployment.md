@@ -85,7 +85,7 @@ ID and the run URL.
 | Minimum CUDA | 13.0 | The torch wheel in `uv.lock` is built for CUDA 13 |
 | Workers | 0 to 2 | Scale to zero when idle, and cap the spend |
 | Idle timeout | 60 s | Keeps a worker warm between the requests of one session |
-| Queue delay scaler | 4 s | A job that waits more than 4 seconds adds a worker. [Design](design.md#autoscaling) explains the choice |
+| Queue delay scaler | 4 s | The first job starts a worker right away. Jobs that wait more than 4 seconds add more. [Design](design.md#autoscaling) explains the choice |
 | FlashBoot | On | Faster restarts of recently used workers, at no extra cost |
 | Execution timeout | 600 s | Stops runaway jobs |
 | Container disk | 20 GB | Scratch space for the worker |
@@ -99,8 +99,16 @@ make deploy DEPLOY_ARGS="--name flux-1-dev-l40s --gpu-pool ADA_48_PRO --exclude-
 
 ## Check it
 
-Set `RUNPOD_ENDPOINT_ID` to the ID that `make deploy` printed. The smoke test sends one small
-job and checks that a PNG of the right size comes back:
+Set `RUNPOD_ENDPOINT_ID` to the ID that `make deploy` printed. On a new host, Runpod first
+pulls the image while the worker is scaled down, and does not bill the pull. A job that starts
+a worker before the image is on the host pays for the pull as part of its cold start, so wait
+until a worker shows as `IDLE`:
+
+```bash
+uv run flux-endpoint status
+```
+
+The smoke test sends one small job and checks that a PNG of the right size comes back:
 
 ```bash
 make smoke
@@ -112,8 +120,7 @@ Then generate an image:
 uv run flux-endpoint generate "A lighthouse on a rocky coast at dusk, cinematic lighting" --seed 42
 ```
 
-The first job waits for a cold start. On a new host, Runpod first pulls the image while the
-worker is scaled down and not billed. Billing begins when the worker starts and loads the
+The first job waits for a cold start, and billing begins when the worker starts and loads the
 model. To watch this with `status` and `logs`, see [Operations](operations.md).
 
 ## Update and roll back
@@ -136,7 +143,9 @@ workers gradually, and `flux-endpoint status` marks the old ones as stale. To ro
 make rollback
 ```
 
-To deploy any earlier build, run `make deploy` with `TAG` set to that build's tag.
+`make rollback` does not check the registry. If `make image` never ran for that commit, the tag
+does not exist and the workers fail to pull it, so check the tag on Docker Hub first. To deploy
+any earlier build, run `make deploy` with `TAG` set to that build's tag.
 
 ## Variants
 
@@ -205,9 +214,10 @@ uv run flux-endpoint teardown --name flux-1-dev-l40s
 
 ## Costs and limits
 
-- Billing is per second, from the model load through the jobs to the end of the idle timeout.
-  Image pulls and cached model downloads happen while the worker is scaled down, and Runpod
-  does not bill them.
+- Billing is per second, from the worker start through the model load and the jobs to the end
+  of the idle timeout. Image pulls and cached model downloads normally happen while the worker
+  is scaled down, and Runpod does not bill them. If a job starts a worker before the image is
+  on the host, the pull is billed as part of the cold start.
 - The largest hourly spend is `workers_max` times the GPU price. With 2 workers it is $3.50 per
   hour on L40S, and $5.44 if every worker falls back to an A100.
 - Every job has a 600 second limit, and every job from the CLI has a time to live, so a stuck

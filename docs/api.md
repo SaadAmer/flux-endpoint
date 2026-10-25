@@ -15,8 +15,9 @@ The endpoint uses Runpod's standard queue routes on `https://api.runpod.ai/v2/<e
 | `/cancel/<job ID>` | POST | Cancel a queued or running job |
 | `/health` | GET | Job and worker counts by state. The worker counts trail the REST API worker list by about 30 seconds |
 
-Results stay available for 30 minutes after a job completes. `/run` accepts 1,000 requests
-per 10 seconds per endpoint, and the limit grows with the number of workers.
+After a job completes, Runpod keeps the result for 30 minutes for `/run` and 1 minute for
+`/runsync`, or until the job's time to live ends, if that comes first. `/run` accepts 1,000
+requests per 10 seconds per endpoint, and the limit grows with the number of workers.
 
 ## Request
 
@@ -37,8 +38,9 @@ Endpoint.
 Unknown fields are rejected, so a misspelled field fails the job right away instead of being
 ignored.
 
-A job can also carry a `policy`. `ttl` is the time in milliseconds after which Runpod drops
-the job, whether it is queued or running. The CLI sets it to its own timeout plus 60 seconds.
+A job can also carry a `policy`. `ttl` is the time in milliseconds, counted from submission,
+after which Runpod deletes the job and its result, whether it is queued, running or completed.
+The CLI sets it to its own timeout plus 60 seconds.
 
 ```json
 {

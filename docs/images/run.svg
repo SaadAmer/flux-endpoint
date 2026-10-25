@@ -44,12 +44,12 @@
               <rect class="box" x="294" y="120" width="180" height="110" rx="10"/>
               <text class="t-title" x="310" y="148">Runpod job API</text>
               <text class="t-mono" x="310" y="172">api.runpod.ai</text>
-              <text class="t-line" x="310" y="194">results kept 30 min</text>
+              <text class="t-line" x="310" y="194">results up to 30 min</text>
 
               <rect class="box" x="554" y="120" width="150" height="110" rx="10"/>
               <text class="t-title" x="570" y="148">Queue</text>
-              <text class="t-line" x="570" y="172">scaler adds a</text>
-              <text class="t-line" x="570" y="194">worker after 4 s</text>
+              <text class="t-line" x="570" y="172">first worker at once</text>
+              <text class="t-line" x="570" y="194">more after a 4 s wait</text>
 
               <rect class="box" x="794" y="98" width="182" height="120" rx="10"/>
               <rect class="box phase" x="780" y="112" width="182" height="120" rx="10"/>
@@ -78,5 +78,5 @@
               <path class="edge optional" d="M780 370 H106 V234" marker-end="url(#arrow)"/>
               <text class="t-label" x="447" y="362" text-anchor="middle"><tspan class="t-step">6</tspan><tspan dx="6">download over https</tspan></text>
               <path class="edge optional" d="M878 52 V94" marker-end="url(#arrow)"/>
-              <text class="t-label" x="866" y="72" text-anchor="end">pull on cold start</text>
+              <text class="t-label" x="866" y="72" text-anchor="end">pulled before a cold start</text>
             </svg>

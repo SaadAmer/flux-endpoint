@@ -69,6 +69,6 @@ each service that sends jobs a Restricted key for this endpoint.
 
 | Data | Where it goes | Exposure |
 |---|---|---|
-| Prompts | The job input only | Runpod keeps the input and the result for 30 minutes after the job completes |
+| Prompts | The job input only | Runpod keeps the input and the result for up to 30 minutes after the job completes |
 | Images | The job result, or the output bucket | Anyone who has the presigned URL can open the image for 7 days, so treat the URL like a secret |
 | Weights | The private image, or the owner's cached model or Global Volume | FLUX.1-dev is gated and licensed for non-commercial use, so no public image holds it. The public slim image has the code and its libraries and nothing else |

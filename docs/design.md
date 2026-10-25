@@ -104,11 +104,11 @@ serve traffic. For example, 600 images an hour at 14 seconds each keeps 2.3 work
 
 ### Autoscaling
 
-Image requests already take several seconds, so I chose the queue delay scaler. It adds a
-worker when a job waits more than 4 seconds. For steady, latency-sensitive traffic, the request
-count scaler or active workers fit better. Active workers remove cold starts, but they bill
-around the clock. The cost model gives the break-even traffic for one busy worker against
-the Public Endpoint.
+Image requests already take several seconds, so I chose the queue delay scaler. When no worker
+is running, the first job starts one right away, and the scaler adds more when jobs wait more
+than 4 seconds. For steady, latency-sensitive traffic, the request count scaler or active
+workers fit better. Active workers remove cold starts, but they bill around the clock. The cost
+model gives the break-even traffic for one busy worker against the Public Endpoint.
 
 ### Availability
 
@@ -120,10 +120,12 @@ GPUs to choose from.
 
 ### Cold starts
 
-The first start on a host pulls about 30 GB while the worker is still scaled down, and then
-the worker loads the model, which is billed. FlashBoot restarts recently used workers faster.
-Cold starts show up in the longest queue time, which the benchmark reports. A cached model
-removes the large pull. See [Results](results.md) for the cold start of each delivery option.
+On a new host, Runpod pulls about 30 GB while the worker is still scaled down, and does not
+bill the pull. The model load after that is billed. If a job starts a worker before the image
+is on the host, the pull becomes part of the billed cold start. FlashBoot restarts recently
+used workers faster. Cold starts show up in the longest queue time, which the benchmark
+reports. A cached model removes the large pull. See [Results](results.md) for the cold start
+of each delivery option.
 
 ## Clients
 

@@ -53,8 +53,8 @@ The deploy reads `deploy/endpoint.toml` and calls the Runpod REST API v2:
 
 1. The client posts the request to `/run` with a time to live, after which an abandoned job
    expires.
-2. The job waits in the queue. When it waits longer than 4 seconds, the scaler adds a worker,
-   up to 2.
+2. The job waits in the queue. If no worker is running, Runpod starts one right away. When
+   jobs wait longer than 4 seconds, the scaler adds more workers, up to 2.
 3. A worker takes the job. On a cold start it loads the model first, and on a new host Runpod
    pulls the image before that.
 4. The worker returns the result to the job API, either the image as base64 or a URL in the
@@ -131,7 +131,7 @@ development, `make install` installs both.
 | Data | Where it lives | How long |
 |---|---|---|
 | Weights | The image, a cached model or a Global Volume | Until the next release |
-| Job input and result | Runpod's queue | 30 minutes after the job completes, for `/run` |
+| Job input and result | Runpod's queue | Up to 30 minutes after the job completes. See [API](api.md#routes) |
 | Images in the output bucket | Your bucket | The presigned URL works for 7 days |
 | Prompts | Only in the job input | Same as the job input. The worker never logs them |
 | Benchmark samples | `outputs/` on your machine | Until you delete them |
