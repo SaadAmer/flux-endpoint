@@ -18,7 +18,7 @@ RUN --mount=type=secret,id=hf_token,env=HF_TOKEN \
         --exclude "dev_grid.jpg" --exclude "README.md" --exclude ".gitattributes" \
     && rm -rf /weights/.cache
 
-FROM python:3.12-slim@sha256:a6e34c598f2467ed0e9a8d349809fcd8b5c603269512df273a0bb1784edc11b1 AS base
+FROM python:3.12-slim@sha256:5e2bdb1b0d542d5039cffb8181c65930093949194a65c365dfb1b0fe13a4fa5b AS base
 RUN useradd --create-home --uid 1000 worker
 
 # The weights sit below the code, so a host that pulled one release reuses them for the next.
